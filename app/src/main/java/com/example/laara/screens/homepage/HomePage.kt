@@ -1,8 +1,11 @@
 package com.example.laara.screens.homepage
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -10,62 +13,37 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.laara.R
 import com.example.laara.ui.theme.AppTheme
 
-//data class HomePageCards( val imageResource:Int, val stringRes:String)
-//
-//
-//data class Post(val username:String,
-//                val rollNo:String,
-//                val profile:Int,
-//                val content:String,
-//                )
-//class PostsData(){
-//    fun loadOfflinePosts():List<Post>{
-//        return listOf(
-//            Post("Anand","22FE1A6129", R.drawable.img3, "hello how are doing" ),
-//            Post("sai","22FE1A6128", R.drawable.mylove, "im so bored can u talk to me sometime " ),
-//            Post("Anand","22FE1A6129", R.drawable.img3, "ofc i will do anythong for you \ni will anythin" ),
-//            Post("sai","22FE1A6128", R.drawable.mylove, "stop kidding " ),
-//            Post("Anand","22FE1A6129", R.drawable.img3, "im not kidding its true " ),
-//            Post("sai","22FE1A6128", R.drawable.mylove, "ok  " ),
-//            Post("Anand","22FE1A6129", R.drawable.img3, "yep, you look very cute today" ),
-//            Post("sai","22FE1A6128", R.drawable.mylove, "thank you, i wore it for you" ),
-//            Post("Anand","22FE1A6129", R.drawable.img3, "awww.. im very lucy to have you" ),
-//            Post("sai","22FE1A6128", R.drawable.mylove, "hahaha " ),
-//            Post("Anand","22FE1A6129", R.drawable.img3, "you i leterally missed you so much " ),
-//            Post("sai","22FE1A6128", R.drawable.mylove, "me to lets have some fun " ),
-//
-//        )
-//    }
-//}
-
-
 
 @Composable
-fun HomePage(vm: HomeVM){
+fun HomePage(vm: HomeVM = viewModel()){
 //    val postItems = PostsData().loadOfflinePosts()
-    Column {
-        val status = vm.uiState
-
-        when(status){
+    val status = vm.uiState.collectAsState()
+//    val scroll = rememberScrollState()
+    vm.loadDummyPosts()
+    Column{
+        when(status.value){
             is homeUiState.Loading -> Text(text = "loading")
             is homeUiState.Error -> Text(text = "error retry")
             is homeUiState.Success -> LazyColumn(
                 modifier = Modifier.padding(horizontal = 5.dp)
             ) {
-                items(status.postsData){
+                items((status.value as homeUiState.Success).postsData){
                         item -> PostCard(postItem = item)
                 }
             }
@@ -76,30 +54,45 @@ fun HomePage(vm: HomeVM){
 
 @Composable
 fun PostCard(postItem: post){
-    Card (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp)
-    ){
-        Column(
-            modifier = Modifier.padding(10.dp)
+
+    Column {
+        Row(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
         ) {
-            Row {
-                Image(painter = painterResource(id = R.drawable.laralogo),
-                    contentDescription = "username",
-                    modifier = Modifier
-                        .height(50.dp)
-                        .width(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop)
-                Column {
-                    Text(text = postItem.rollno)//postItem.rollNo
-                    Text(text = postItem.name)
-                }
+            Image(
+                painter = painterResource(id = R.drawable.laralogo),
+                contentDescription = "username",
+                modifier = Modifier
+                    .height(44.dp)
+                    .width(44.dp)
+                    .padding(5.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            Column {
+                Text(
+                    text = postItem.rollno,
+                    style = MaterialTheme.typography.labelLarge
+                )//postItem.rollNo
+                Text(
+                    text = postItem.name,
+                    fontWeight = FontWeight.Light,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Spacer(modifier = Modifier.height(14.dp))
+                Text(text = postItem.message, style = MaterialTheme.typography.bodyLarge)
+
             }
-            Text(text = postItem.message)
         }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .align(Alignment.CenterHorizontally)
+                .background(MaterialTheme.colorScheme.outline)
+        )
     }
 }
 
@@ -107,6 +100,7 @@ fun PostCard(postItem: post){
 @Composable
 private fun HomePrev() {
     AppTheme {
-        HomePage(viewModel())
+//        PostCard(postItem = post(1, "22FE1A6129", "anand", "hello everyone"))
+        HomePage()
     }
 }

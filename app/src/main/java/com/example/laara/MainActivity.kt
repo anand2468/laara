@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.laara.bottomNavBar.AddPostFAB
 import com.example.laara.bottomNavBar.AppNavGraph
 import com.example.laara.bottomNavBar.BottomNavBar
 import com.example.laara.bottomNavBar.NavItems
@@ -89,6 +90,11 @@ fun App() {
                 if (currentRoute != NavItems.login.route) {
                     BottomNavBar(navController = navController, navItems = navItems)
                 }
+            },
+            floatingActionButton = {
+                if (currentRoute == NavItems.Home.route) {
+                    AddPostFAB()
+                }
             }
         ) {
             AppNavGraph(
@@ -97,7 +103,6 @@ fun App() {
                 Modifier.padding(it)
             )
         }
-
 }
 
 @Preview(showBackground = true)

@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -19,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,9 +36,10 @@ import com.example.laara.R
 import com.example.laara.screens.homepage.HomePage
 import com.example.laara.screens.homepage.HomeVM
 import com.example.laara.screens.login.Login
-import com.example.laara.screens.marks.marksPage
+import com.example.laara.screens.marks.MarksPage
 import com.example.laara.screens.profile.Profile
 import com.example.laara.screens.profile.ProfileVM
+import com.example.laara.ui.theme.AppTheme
 
 
 @Composable
@@ -104,7 +109,7 @@ fun AppNavGraph(navController: NavHostController, startDestination:String, modif
 
         //Marks page
         composable(NavItems.Marks.route){
-            marksPage()
+            MarksPage()
         }
 
         //profile page
@@ -114,4 +119,23 @@ fun AppNavGraph(navController: NavHostController, startDestination:String, modif
             }
         }
     }
+}
+
+@Composable
+fun AddPostFAB(){
+    Button(onClick = { /*TODO*/ }) {
+        Row (horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically){
+            Icon(Icons.Filled.Edit, contentDescription = null)
+            Text(text = "Add post")
+        }
+    }
+}
+@Preview
+@Composable
+private fun fadpev() {
+    AppTheme {
+        AddPostFAB()
+    }
+
 }

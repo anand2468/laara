@@ -38,11 +38,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.laara.R
 import com.example.laara.bottomNavBar.NavItems
+import com.example.laara.internet.loginClass
 import com.example.laara.preferences.loginSharedPref
+import kotlinx.coroutines.launch
 
 @Composable
-fun Login(navController:NavController){
-    val vm:LoginVM = viewModel()
+fun Login(navController:NavController, vm:LoginVM = viewModel()){
     val vmUI = vm.uiState.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -107,17 +108,17 @@ fun Login(navController:NavController){
             )
 
         Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-//            Button(onClick = { scope.launch {
-//                loginPref.setCredentials(loginClass(Name = "admin"))
-//                navController.navigate(NavItems.Home.route)
-//            } },
-//                modifier = Modifier
-//                    .padding( end = 10.dp)
-//                    .fillMaxWidth(0.5f)
-//                    .background(shape = RoundedCornerShape(4.dp), color = MaterialTheme.colorScheme.primary)
-//            ) {
-//                Text(text = "Preview", fontSize = 20.sp, fontWeight = FontWeight.Normal)
-//            }
+            Button(onClick = { scope.launch {
+                loginPref.setCredentials(loginClass(Name = "admin"))
+                navController.navigate(NavItems.Home.route)
+            } },
+                modifier = Modifier
+                    .padding( end = 10.dp)
+                    .fillMaxWidth(0.5f)
+                    .background(shape = RoundedCornerShape(4.dp), color = MaterialTheme.colorScheme.primary)
+            ) {
+                Text(text = "Preview", fontSize = 20.sp, fontWeight = FontWeight.Normal)
+            }
             Button(onClick = { vm.checkUser(context) },
                 modifier = Modifier
 //                    .padding(top = 10.dp, end = 10.dp)
