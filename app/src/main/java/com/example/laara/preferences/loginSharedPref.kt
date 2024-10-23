@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.laara.internet.loginClass
+import com.example.laara.screens.marks.academics
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -54,6 +55,16 @@ class loginSharedPref(private val context: Context) {
             val mobile = preferences[MOBILE_NUMBER]?: "9876543219"
             val name = preferences[NAME]?: "admin"
             loginClass(Name = name, CollegeId = collegeId, MailId = mailId, MobileNumber = mobile )
+        }
+
+    val getAcademics: Flow<academics> = context.dataStore.data
+        .map{
+            preferences ->
+            val branch = preferences[BRANCH_NAME]!!
+            val regulation = preferences[REGULATION]!!
+            val collegeid = preferences[COLLEGE_ID]!!
+            val batch = preferences[BATCH]!!
+            academics(branch = branch, batch = batch, regulation = regulation, collegeId = collegeid)
         }
     suspend fun setCredentials(data:loginClass){
         context.dataStore.edit { preferences ->

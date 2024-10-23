@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -30,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,10 +55,13 @@ fun Login(navController:NavController, vm:LoginVM = viewModel()){
 
     val tfModifier = Modifier
         .fillMaxWidth()
+        .padding(horizontal = 8.dp, vertical = 0.dp)
     val loginPref = loginSharedPref(context)
     if (vmUI.value.loggedIn){
         navController.navigate(NavItems.Home.route){
-            popUpTo(NavItems.Home.route)
+            popUpTo(0){
+                inclusive = true
+            }
         }
     }
     Column (
@@ -87,6 +93,7 @@ fun Login(navController:NavController, vm:LoginVM = viewModel()){
             modifier = tfModifier,
             label = { Text(text = "Roll Number") },
             isError = vmUI.value.usernameError,
+            shape = RoundedCornerShape(8.dp),
             singleLine = true,
             supportingText = {
                 if(vmUI.value.usernameError){
@@ -99,6 +106,9 @@ fun Login(navController:NavController, vm:LoginVM = viewModel()){
             modifier = tfModifier,
             label = { Text(text = "Password") },
             singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            visualTransformation = PasswordVisualTransformation(),
             isError =  vmUI.value.passwordError,
             supportingText = {
                 if (vmUI.value.passwordError){
@@ -107,15 +117,20 @@ fun Login(navController:NavController, vm:LoginVM = viewModel()){
             }
             )
 
-        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+        Row(horizontalArrangement = Arrangement.Center,
+            modifier = tfModifier) {
             Button(onClick = { scope.launch {
                 loginPref.setCredentials(loginClass(Name = "admin"))
-                navController.navigate(NavItems.Home.route)
+                navController.navigate(NavItems.Home.route){
+                    popUpTo(0 ){
+                        inclusive = false
+                    }
+                }
             } },
                 modifier = Modifier
                     .padding( end = 10.dp)
                     .fillMaxWidth(0.5f)
-                    .background(shape = RoundedCornerShape(4.dp), color = MaterialTheme.colorScheme.primary)
+                    .background(shape = RoundedCornerShape(8.dp), color = MaterialTheme.colorScheme.primary)
             ) {
                 Text(text = "Preview", fontSize = 20.sp, fontWeight = FontWeight.Normal)
             }
@@ -123,7 +138,7 @@ fun Login(navController:NavController, vm:LoginVM = viewModel()){
                 modifier = Modifier
 //                    .padding(top = 10.dp, end = 10.dp)
                     .fillMaxWidth()
-                    .background(shape = RoundedCornerShape(4.dp), color = MaterialTheme.colorScheme.primary)
+                    .background(shape = RoundedCornerShape(8.dp), color = MaterialTheme.colorScheme.primary)
             ) {
                 Text(text = "Login", fontSize = 20.sp, fontWeight = FontWeight.Normal)
             }

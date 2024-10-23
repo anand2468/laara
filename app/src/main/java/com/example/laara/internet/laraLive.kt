@@ -49,7 +49,7 @@ data class subList(
     val SubjectName:String
 )
 
-const val BASE_URL:String = "http://vignanslara.live"
+const val BASE_URL:String = "https://vlits.live"
 
 private val laraRetrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())

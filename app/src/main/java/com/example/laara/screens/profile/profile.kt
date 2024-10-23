@@ -86,7 +86,9 @@ fun Profile(navController:NavController, vm: ProfileVM){
                 /* todo */
                 vm.removeCreds(context)
             navController.navigate(NavItems.login.route){
-                popUpTo(NavItems.login.route)
+                popUpTo(0){
+                    inclusive = true
+                }
             }
         }) {
             Text(text = "log out")

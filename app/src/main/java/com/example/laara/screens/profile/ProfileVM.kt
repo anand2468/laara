@@ -24,7 +24,7 @@ class ProfileVM():ViewModel() {
                     Name= prefs.Name,
                     CollegeId = prefs.CollegeId,
                     MailId = prefs.MailId,
-                    MobileNumber = prefs.MobileNumber
+                    MobileNumber = prefs.MobileNumber,
                 )
                 }
                 }

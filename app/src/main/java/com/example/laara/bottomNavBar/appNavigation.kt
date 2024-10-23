@@ -37,6 +37,7 @@ import com.example.laara.screens.homepage.HomePage
 import com.example.laara.screens.homepage.HomeVM
 import com.example.laara.screens.login.Login
 import com.example.laara.screens.marks.MarksPage
+import com.example.laara.screens.marks.MarksVM
 import com.example.laara.screens.profile.Profile
 import com.example.laara.screens.profile.ProfileVM
 import com.example.laara.ui.theme.AppTheme
@@ -88,9 +89,10 @@ fun BottomNavBar(navController:NavController, navItems:List<NavItems>){
 
 @Composable
 fun AppNavGraph(navController: NavHostController, startDestination:String, modifier: Modifier){
-    val homevm: HomeVM = viewModel()
-    val profilevm: ProfileVM = viewModel()
-    NavHost(
+    val homeVm: HomeVM = viewModel()
+    val profileVm: ProfileVM = viewModel()
+    val marksVM:MarksVM = viewModel()
+            NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier){
@@ -103,19 +105,19 @@ fun AppNavGraph(navController: NavHostController, startDestination:String, modif
         /* home page*/
         composable(NavItems.Home.route){
             Column {
-                HomePage(vm = homevm)
+                HomePage(vm = homeVm)
             }
         }
 
         //Marks page
         composable(NavItems.Marks.route){
-            MarksPage()
+            MarksPage(marksVM)
         }
 
         //profile page
         composable(NavItems.Profile.route){
             Column {
-                Profile(navController, profilevm)
+                Profile(navController, profileVm)
             }
         }
     }

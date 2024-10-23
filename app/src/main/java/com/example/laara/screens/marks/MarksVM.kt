@@ -1,29 +1,19 @@
 package com.example.laara.screens.marks
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.laara.internet.loginService
+import com.example.laara.internet.subList
+import com.example.laara.preferences.loginSharedPref
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import okio.IOException
 
-sealed interface marksUiState{
-    data class Success(val data:List<subjectMarks>):marksUiState
-    object Loading:marksUiState
-    object Error:marksUiState
-}
-
-//fun JSONObject.toMap(): Map<String, *> = keys().asSequence().associateWith {
-//    when (val value = this[it])
-//    {
-//        is JSONArray ->
-//        {
-//            val map = (0 until value.length()).associate { Pair(it.toString(), value[it]) }
-//            JSONObject(map).toMap().values.toList()
-//        }
-//        is JSONObject -> value.toMap()
-//        JSONObject.NULL -> null
-//        else            -> value
-//    }
-//}
 
 data class subjectMarks(
     val subjectName:String,
@@ -31,38 +21,73 @@ data class subjectMarks(
     val internals:Int,
     val completed:String)
 
-class MarksVM:ViewModel() {
-    init {
-//        getData()
+data class academics(
+    val branch:String,
+    val batch:String,
+    val regulation:String,
+    val collegeId:String
+)
+
+sealed interface MarksUI{
+    data class Success(val subjects:List<subList>, val results:Map<String, Any>):MarksUI{
+
+    }//, val results:Map<String, Any>
+    object Loading:MarksUI
+    object Error:MarksUI
+}
+
+class SemStatus(val semister:String, val viewModelScope:CoroutineScope){
+    private val _uiState:MutableStateFlow<MarksUI> = MutableStateFlow(MarksUI.Loading)
+    val uiState = _uiState.asStateFlow()
+    suspend fun getData( context: Context){
+        val data:academics = loginSharedPref(context).getAcademics.first()
+        viewModelScope.launch {
+            try {
+                Log.d("MARKS_MODULE", " TABLE NAME IS ${data.regulation}_${semister}_${data.branch}_subjects table ${data.batch}_${semister}_${data.branch}, clg id ${data.collegeId } ")
+                val load_subjects = loginService.getServiceApi.getSubjects("${data.regulation}_${semister}_${data.branch}_subjects")
+                val load_results = loginService.getServiceApi.getResults("${data.batch}_${semister}_${data.branch}",data.collegeId )
+                if (load_results.isNotEmpty()){
+                    _uiState.value = MarksUI.Success(load_subjects, load_results[0])
+                }
+                else{
+                    _uiState.value = MarksUI.Error
+                }
+                Log.d("MARKS_MODULE", "$load_subjects \n ${load_results}")
+
+            }catch (error:IOException){
+                _uiState.value = MarksUI.Error
+                Log.d("MARKS_MODULE", "error occurred ${error}")
+            }
+        }
     }
+}
 
-    var uiState:marksUiState by mutableStateOf(marksUiState.Loading)
+class MarksVM:ViewModel() {
 
-//    fun getData(){
+    private var _uiState:MutableStateFlow<MarksUI> = MutableStateFlow(MarksUI.Loading)
+    private var _State = MutableStateFlow(listOf(SemStatus("1_1", viewModelScope),
+        SemStatus("1_2", viewModelScope),
+        SemStatus("2_1", viewModelScope),
+        SemStatus("2_2", viewModelScope),
+        SemStatus("3_1", viewModelScope),
+        SemStatus("3_2", viewModelScope),
+        SemStatus("4_1", viewModelScope),
+        SemStatus("4_2", viewModelScope)
+        ))
+    val ui = _State.asStateFlow()
+
+//    fun getSubjectData(data: academics){
 //        viewModelScope.launch {
-//            uiState = try {
-//                val subjectList = loginService.getServiceApi.getSubjects("r20_1_2_AIML_subjects")
-////                var result = loginService.getServiceApi.getResults("22_1_2_AIML", "22FE1A6129")
-//
-//
-//                Log.d("LARA_LIVE", subjectList.toString())
-//                marksUiState.Success(subjectList)
-//            }catch (e:IOException){
-//                marksUiState.Error
+//            try {
+//                val load_subjects = loginService.getServiceApi.getSubjects("${data.regulation}_${data.sem}_${data.branch}_subjects")
+//                val load_results = loginService.getServiceApi.getResults("${data.batch}_${data.sem}_${data.batch}",data.collegeId, )[0]
+//                Log.d("MARKS_MODULE", "$load_subjects \n ${load_results.get("R201201")!!::class.simpleName} ")
+//                _uiState.value = MarksUI.Success(load_subjects, load_results)
+//            }catch (error:IOException){
+//                _uiState.value = MarksUI.Error
+//                Log.d("MARKS_MODULE", "error occurred ${error}")
 //            }
 //        }
 //    }
-
-    fun getSubjectList(){
-        val data = listOf(
-            subjectMarks("computer organisation", "A", 29, "dec 23"),
-            subjectMarks("dwdm", "A", 29, "dec 23"),
-            subjectMarks("flat", "A", 29, "dec 23"),
-            subjectMarks("mefa", "A", 29, "dec 23"),
-            subjectMarks("p&s", "A", 29, "dec 23"),
-
-        )
-        uiState = marksUiState.Success( data )
-    }
 
 }
